@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html ng-app="registrationApp">
+<head>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/captain-domo.css">
+</head>
+<body>
+<script src="angular.js"></script>
+<script src="app.js"></script>
+<script src="hal.js"></script>
+<div class="page">
+    <div data-ng-controller="RegistrationCtrl">
+        <form novalidate class="form-horizontal" name="AddRequestorForm">
+            <h2>Anmelden</h2>
+            <div class="form-group">
+                <label for="number" class="col-sm-2 control-label text-left">Mitgliedsnummer: </label>
+                <div class="col-sm-10">
+                    <input id="number" type="number" data-ng-model="registrationRequest.number"
+                           placeholder="Mitgliedsnummer"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label text-left">Vorname: </label>
+                <div class="col-sm-10">
+                    <input id="firstname" type="text" data-ng-model="registrationRequest.firstname"
+                           placeholder="Vorname"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label text-left">Nachname: </label>
+                <div class="col-sm-10">
+                    <input id="lastname" type="text" data-ng-model="registrationRequest.lastname" placeholder="Nachname"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email" class="col-sm-2 control-label text-left">Email: </label>
+                <div class="col-sm-10">
+                    <input id="email" type="email" data-ng-model="registrationRequest.email" placeholder="Emailadresse"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button class="btn btn-primary"
+                            data-ng-disabled="
+                        AddRequestorForm.$invalid ||
+                        isUnchanged(registrationRequest) ||
+                        backendCallLoading"
+                            type="submit"
+                            data-ng-click="register()">Anmelden
+                    </button>
+                    <img data-ng-if="backendCallLoading"
+                            src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+                </div>
+            </div>
+        </form>
+        <p class="alert alert-success"
+           data-ng-show="registrationResult.registerResultCode === 'SUBSCRIPTION_ADDED'">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;Deine Anmeldung war
+            erfolgreich. Deine Email wurde hinzugef&uuml;gt!
+        </p>
+        <p class="alert alert-success"
+           data-ng-show="registrationResult.registerResultCode === 'NO_MATCHING_MEMBER' ||
+			   registrationResult.registerResultCode === 'SUBSCRIPTION_WITH_OTHER_MEMBER_DATA_EXISTS'">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;Vielen Dank f&uuml;r Deine
+            Anmeldung. Diese wird bald gepr&uuml;ft und freigegeben.
+        </p>
+        <p class="alert alert-info"
+           data-ng-show="registrationResult.registerResultCode === 'SUBSCRIPTION_ALREADY_EXISTS'">
+            Deine Emailadresse ist bereits eingetragen! Es wird keine erneute Anmeldung vorgenommen. Falls Du
+            keine Emails erh&auml;lst, &uuml;berpr&uuml;fe bitte Deinen Spam-Ordner.</p>
+        <div class="alert alert-info"
+             data-ng-show="registrationResult.registerResultCode === 'SUBSCRIPTION_WITH_OTHER_EMAIL_EXISTS'">
+            <p>
+                Du bist bereits mit folgenden Emailadressen angemeldet. Willst Du die Emailadresse
+                <span data-ng-bind="registrationRequest.email"></span> zus&auml;tzlich eintragen?
+                <button
+                        type="button"
+                        class="btn btn-default"
+                        aria-label="Left Align"
+                        data-ng-disabled="backendCallLoading"
+                        data-ng-click="addAdditionalEmail()">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-default" aria-label="Left Align"
+                        data-ng-click="cancelAddtionalEmail()">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+                <img data-ng-if="backendCallLoading"
+                        src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="/>
+            </p>
+            <ul class="list-group">
+                <li data-ng-repeat="subscription in registrationResult.existingSubscriptions.subscriptionList track by $index"
+                    class="list-group-item" data-ng-bind="subscription.email"></li>
+            </ul>
+        </div>
+        <div class="alert alert-danger" data-ng-show="errormsg">
+            <p>
+                Uuups! Das h&auml;tte nicht passieren sollen.<br/>Fehlermeldung: <span data-ng-bind="errormsg"></span>
+            </p>
+        </div>
+    </div>
+    <div data-ng-controller="UnsubscribeCtrl">
+        <h2>Abmelden</h2>
+        <form novalidate class="form-horizontal" name="UnsubscribeForm">
+            <div class="form-group">
+                <label for="unsubscribe_email" class="col-sm-2 control-label text-left">Email: </label>
+                <div class="col-sm-10">
+                    <input id="unsubscribe_email"
+                           type="email"
+                           data-ng-model="unsubscribeRequest.email"
+                           placeholder="Emailadresse"
+                           required="required">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button class="btn btn-primary"
+                            data-ng-disabled="UnsubscribeForm.$invalid || backendCallLoading"
+                            type="submit"
+                            data-ng-click="unsubscribe()">Abmelden
+                    </button>
+                    <img
+                            data-ng-if="backendCallLoading"
+                            src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+                    />
+                </div>
+            </div>
+        </form>
+        <p class="alert alert-success"
+           data-ng-show="unsubscribeResult.unsubscribeResultCode === 'SUBSCRIPTION_REMOVED'">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;Deine Abmeldung war
+            erfolgreich. Deine Email wurde entfernt!
+        </p>
+        <p class="alert alert-warning"
+           data-ng-show="unsubscribeResult.unsubscribeResultCode === 'SUBSCRIPTION_NOT_EXISTENT'">
+            Deine Emailadresse ist uns leider nicht bekannt! Es gibt kein Abonnement.
+            Bei Fragen wende Dich bitte an die Mitgliederverwaltung.</p>
+        <div class="alert alert-danger" data-ng-show="errormsg">
+            <p>
+                Uuups! Das h&auml;tte nicht passieren sollen. <br/>Fehlermeldung: <span data-ng-bind="errormsg"></span>
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
