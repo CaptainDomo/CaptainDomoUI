@@ -1,8 +1,13 @@
 # CaptainDomoUI
 This is the end-user GUI to apply for subscription / unsubscription to a Majordomo mailing list. The application and subscription processes are handled completely by the [CaptainDomoService](https://github.com/CaptainDomo/CaptainDomoService) REST service.
 
+# Attention
+This branch is used for a complete re-write of this UI based on [Angular](https://angular.io/) and is work in progress.
+
+If you are looking for a tested and working version, please refer to the [master](https://github.com/CaptainDomo/CaptainDomoUI/tree/master) branch.
+
 # Techstack
-This GUI is implemented in AngularJS with Bootstrap CSS. 
+This GUI is implemented in Angular 4 with Bootstrap CSS. 
 
 # Run
 ## Dependencies
@@ -22,10 +27,6 @@ Notes:
 * The REST API is exposed at port 80 and starts below `src/pulic`. A complete example is: [http://localhost/src/public/management/member](http://localhost/src/public/management/member)
 * The MySQL-Database is directly connectable at port 3386
 * For your convenience we also included phpMyAdmin at [http://localhost/phpmyadmin/](http://localhost/phpmyadmin/). Username: `root` and empty password
-
-# Deployment
-* Copy the complete content of this directory to a web server of your choice.
-* Adapt the contents of `config.json` on the web server accordingly to fit the corresponding CaptainDomoService backend.
 
  
 
